@@ -7,9 +7,16 @@ $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'GET') {
     $routes = [
         '/SukaInfo_app/' => 'views/home/index.php',
-        '/SukaInfo_app/dashboard' => 'views/admin/index.php',
         '/SukaInfo_app/login' => 'views/auth/login.php',
-        '/SukaInfo_app/register' => 'views/auth/register.php',
+        '/SukaInfo_app/forgot-password' => 'views/auth/forgoPassword.php',
+        // === route admin === //
+        '/SukaInfo_app/dashboard' => 'views/admin/index.php',
+        // === route artikel === //
+        '/SukaInfo_app/createArtikel' => 'views/admin/pages/artikel/create.php',
+        '/SukaInfo_app/editArtikel' => 'views/admin/pages/artikel/edit.php',
+        // === route event === //
+        '/SukaInfo_app/createEvent' => 'views/admin/pages/artikel/create.php',
+
     ];
 
     if (array_key_exists($uri, $routes)) {
@@ -21,23 +28,46 @@ if ($method === 'GET') {
 }
 
 // Routing POST (menangani login AJAX)
-elseif ($uri === '/SukaInfo_app/login' && $method === 'POST') {
+if ($uri === '/SukaInfo_app/login' && $method === 'POST') {
+    ob_start(); // Start output buffer
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
+
+    define('APP_RUNNING', true);
+    require_once __DIR__ . '/../config/config.php';
 
     header('Content-Type: application/json');
 
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    if ($email === 'admin@gmail.com' && $password === 'admin') {
-        $_SESSION['user'] = $email;
-        echo json_encode(['success' => true]);
-    } else {
+    try {
+        $stmt = $conn->prepare("SELECT * FROM pengguna WHERE email = :email");
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user && password_verify($password, $user['password'])) {
+            $_SESSION['user'] = $user['email'];
+
+            ob_clean(); // Hapus output buffer sebelum kirim JSON
+            echo json_encode(['success' => true]);
+        } else {
+            ob_clean();
+            echo json_encode([
+                'success' => false,
+                'message' => 'Email atau password salah'
+            ]);
+        }
+
+    } catch (PDOException $e) {
+        error_log("Login Error: " . $e->getMessage());
+        ob_clean();
         echo json_encode([
             'success' => false,
-            'message' => 'Email atau password salah'
+            'message' => 'Terjadi kesalahan sistem.'
         ]);
     }
 
@@ -53,8 +83,3 @@ elseif ($uri === '/SukaInfo_app/logout') {
     exit;
 }
 
-// Fallback untuk selain yang ditentukan
-else {
-    http_response_code(404);
-    echo "404 - Halaman tidak ditemukan";
-}
