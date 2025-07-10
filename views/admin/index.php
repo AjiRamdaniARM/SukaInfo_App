@@ -3,7 +3,14 @@
 
 <head>
     <title>Sukabumi Muda - Admin Panel (Front-end Demo)</title>
+    <?php include __DIR__ . '/../../config/config.php'; ?>
     <?php include __DIR__ . '/components/header.php'; ?>
+    <?php include __DIR__ . '/../../vendor/autoload.php'; ?>
+    <?php // Ambil data dari tabel artikels;
+    use Carbon\Carbon;
+
+    Carbon::setLocale('id');
+    $result = $conn->query("SELECT * FROM artikels ORDER BY tanggal_publish DESC"); ?>
 </head>
 
 <body>
@@ -11,6 +18,21 @@
         <?php include('components/navbar.php') ?>
         <main class="admin-main-content">
             <div class="container">
+                <br>
+                <?php if (isset($_SESSION['flash_success'])): ?>
+                    <div class="alert alert-success">
+                        <?= $_SESSION['flash_success'];
+                        unset($_SESSION['flash_success']); ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (isset($_SESSION['flash_error'])): ?>
+                    <div class="alert alert-danger">
+                        <?= $_SESSION['flash_error'];
+                        unset($_SESSION['flash_error']); ?>
+                    </div>
+                <?php endif; ?>
+                <br>
                 <div id="dashboardPage" class="admin-sub-page active">
                     <h2 class="page-section-title">Ringkasan Statistik</h2>
                     <div class="stats-grid">
@@ -76,7 +98,9 @@
                     <div class="info-card">
                         <p>Di sini Anda bisa mengelola semua artikel yang dipublikasikan di Sukabumi Muda.</p>
                         <div class="form-group" style="text-align: right;">
-                            <button onclick="window.location.href='/SukaInfo_app/createArtikel'" class="submit-button" style="width: auto;"><i class="fas fa-plus"></i> Tambah Artikel Baru</button>
+                            <button onclick="window.location.href='/SukaInfo_app/createArtikel'" class="submit-button" style="width: auto;">
+                                <i class="fas fa-plus"></i> Tambah Artikel Baru
+                            </button>
                         </div>
 
                         <div class="table-responsive-wrapper">
@@ -92,66 +116,46 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>Pentingnya Edukasi Lingkungan</td>
-                                        <td>Admin A</td>
-                                        <td>2025-06-15</td>
-                                        <td><span style="color: green; font-weight: 500;">Aktif</span></td>
-                                        <td class="action-buttons">
-                                            <button title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button title="Hapus" class="delete"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>Memulai Bisnis Sosial di Sukabumi</td>
-                                        <td>Admin B</td>
-                                        <td>2025-06-10</td>
-                                        <td><span style="color: green; font-weight: 500;">Aktif</span></td>
-                                        <td class="action-buttons">
-                                            <button title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button title="Hapus" class="delete"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>Review: Festival Seni Sukabumi 2025</td>
-                                        <td>Admin C</td>
-                                        <td>2025-06-01</td>
-                                        <td><span style="color: orange; font-weight: 500;">Draft</span></td>
-                                        <td class="action-buttons">
-                                            <button title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button title="Hapus" class="delete"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>4</td>
-                                        <td>Inovasi Pertanian Lokal</td>
-                                        <td>Admin D</td>
-                                        <td>2025-05-28</td>
-                                        <td><span style="color: green; font-weight: 500;">Aktif</span></td>
-                                        <td class="action-buttons">
-                                            <button title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button title="Hapus" class="delete"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>5</td>
-                                        <td>Peluang Usaha Kreatif</td>
-                                        <td>Admin E</td>
-                                        <td>2025-05-20</td>
-                                        <td><span style="color: green; font-weight: 500;">Aktif</span></td>
-                                        <td class="action-buttons">
-                                            <button title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button title="Hapus" class="delete"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
+                                    <?php if ($result && $result->num_rows > 0): ?>
+                                        <?php $no = 1;
+                                        while ($row = $result->fetch_assoc()): ?>
+                                            <tr>
+                                                <td><?= $no++ ?></td>
+                                                <td><?= htmlspecialchars($row['judul']) ?></td>
+                                                <td><?= htmlspecialchars($row['penulis'] ?: 'Admin') ?></td>
+                                                <td>
+                                                    <?php
+                                                    $tanggal = $row['tanggal_publish'];
+                                                    echo $tanggal ? Carbon::parse($tanggal)->translatedFormat('d F Y') : '-';
+                                                    ?>
+                                                </td>
+                                                <td>
+                                                    <?php
+                                                    $status = strtolower($row['status']);
+                                                    $statusLabel = $status === 'draft' ? 'orange' : 'green';
+                                                    echo "<span style='color: {$statusLabel}; font-weight: 500;'>" . ucfirst($status) . "</span>";
+                                                    ?>
+                                                </td>
+
+                                                <td class="action-buttons">
+                                                    <a href="/SukaInfo_app/viewArtikel?id=<?= $row['id'] ?>" title="Lihat"><i class="fas fa-eye"></i></a>
+                                                    <a href="/SukaInfo_app/editArtikel?id=<?= $row['id'] ?>" title="Edit"><i class="fas fa-edit"></i></a>
+                                                    <a href="/SukaInfo_app/deleteArtikel?id=<?= $row['id'] ?>" title="Hapus" class="delete" onclick="return confirm('Yakin ingin hapus?')"><i class="fas fa-trash-alt"></i></a>
+                                                </td>
+
+                                            </tr>
+                                        <?php endwhile; ?>
+                                    <?php else: ?>
+                                        <tr>
+                                            <td colspan="6">Tidak ada artikel.</td>
+                                        </tr>
+                                    <?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
+
 
                 <div id="eventsPage" class="admin-sub-page">
                     <h2 class="page-section-title">Manajemen Event</h2>

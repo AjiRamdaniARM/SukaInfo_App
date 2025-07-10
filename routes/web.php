@@ -1,10 +1,29 @@
 <?php
-
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
+require_once __DIR__ . '/../controllers/ArtikelController.php';
+require_once __DIR__ . '/../config/config.php';
+
+$artikelController = new ArtikelController($conn);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['REQUEST_URI'] === '/SukaInfo_app/artikel/store') {
+    $artikelController->store();
+}
+
+
+
 // Routing GET (menampilkan halaman)
 if ($method === 'GET') {
+    if ($uri === '/SukaInfo_app/deleteArtikel') {
+        $artikelController->delete();
+    }
+    if ($uri === '/SukaInfo_app/editArtikel') {
+        require_once __DIR__ . '/../controllers/ArtikelController.php';
+        $controller = new ArtikelController($conn);
+        $controller->edit();
+        return;
+    }
     $routes = [
         '/SukaInfo_app/' => 'views/home/index.php',
         '/SukaInfo_app/login' => 'views/auth/login.php',
@@ -13,7 +32,6 @@ if ($method === 'GET') {
         '/SukaInfo_app/dashboard' => 'views/admin/index.php',
         // === route artikel === //
         '/SukaInfo_app/createArtikel' => 'views/admin/pages/artikel/create.php',
-        '/SukaInfo_app/editArtikel' => 'views/admin/pages/artikel/edit.php',
         // === route event === //
         '/SukaInfo_app/createEvent' => 'views/admin/pages/artikel/create.php',
 
@@ -26,6 +44,7 @@ if ($method === 'GET') {
         echo "404 - Halaman tidak ditemukan";
     }
 }
+
 
 // Routing POST (menangani login AJAX)
 if ($uri === '/SukaInfo_app/login' && $method === 'POST') {
@@ -43,11 +62,12 @@ if ($uri === '/SukaInfo_app/login' && $method === 'POST') {
     $password = $_POST['password'] ?? '';
 
     try {
-        $stmt = $conn->prepare("SELECT * FROM pengguna WHERE email = :email");
-        $stmt->bindParam(':email', $email);
+        $stmt = $conn->prepare("SELECT * FROM pengguna WHERE email = ?");
+        $stmt->bind_param('s', $email);
         $stmt->execute();
 
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
 
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['user'] = $user['email'];
@@ -61,7 +81,6 @@ if ($uri === '/SukaInfo_app/login' && $method === 'POST') {
                 'message' => 'Email atau password salah'
             ]);
         }
-
     } catch (PDOException $e) {
         error_log("Login Error: " . $e->getMessage());
         ob_clean();
@@ -75,6 +94,9 @@ if ($uri === '/SukaInfo_app/login' && $method === 'POST') {
 }
 
 
+
+
+
 // Routing Logout
 elseif ($uri === '/SukaInfo_app/logout') {
     session_start();
@@ -82,4 +104,3 @@ elseif ($uri === '/SukaInfo_app/logout') {
     header('Location: /SukaInfo_app/login');
     exit;
 }
-
