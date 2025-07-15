@@ -38,7 +38,7 @@
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="icon"><i class="fas fa-newspaper"></i></div>
-                            <div class="number">125</div>
+                            <div class="number"><?= $totalArtikel ?></div>
                             <div class="label">Total Artikel</div>
                         </div>
                         <div class="stat-card">
@@ -138,7 +138,7 @@
                                                 </td>
 
                                                 <td class="action-buttons">
-                                                    <a href="/SukaInfo_app/viewArtikel?id=<?= $row['id'] ?>" title="Lihat"><i class="fas fa-eye"></i></a>
+                                                    <a href="/SukaInfo_app/detailArtikel?id=<?= $row['id'] ?>" title="Lihat"><i class="fas fa-eye"></i></a>
                                                     <a href="/SukaInfo_app/editArtikel?id=<?= $row['id'] ?>" title="Edit"><i class="fas fa-edit"></i></a>
                                                     <a href="/SukaInfo_app/deleteArtikel?id=<?= $row['id'] ?>" title="Hapus" class="delete" onclick="return confirm('Yakin ingin hapus?')"><i class="fas fa-trash-alt"></i></a>
                                                 </td>
@@ -289,46 +289,26 @@
                                         <th>#</th>
                                         <th>Nama Pengguna</th>
                                         <th>Email</th>
-                                        <th>Peran</th>
-                                        <th>Status</th>
+
+
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>Sihab</td>
-                                        <td>sihabudin@gamil.com</td>
-                                        <td>Admin</td>
-                                        <td><span style="color: green; font-weight: 500;">Aktif</span></td>
-                                        <td class="action-buttons">
-                                            <button title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button title="Hapus" class="delete"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>Aripin</td>
-                                        <td>aripinn@gmail.com</td>
-                                        <td>Admin</td>
-                                        <td><span style="color: green; font-weight: 500;">Aktif</span></td>
-                                        <td class="action-buttons">
-                                            <button title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button title="Hapus" class="delete"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>Budi Santoso</td>
-                                        <td>budi.s@gmail.com</td>
-                                        <td>Admin</td>
-                                        <td><span style="color: orange; font-weight: 500;">Nonaktif</span></td>
-                                        <td class="action-buttons">
-                                            <button title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button title="Hapus" class="delete"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
+                                    <?php foreach ($users as $index => $user): ?>
+                                        <tr>
+                                            <td><?= $index + 1 ?></td>
+                                            <td><?= htmlspecialchars($user['username']) ?></td>
+                                            <td><?= htmlspecialchars($user['email']) ?></td>
+                                            <td class="action-buttons">
+                                                <a href="/SukaInfo_app/pengguna?id=<?= $user['id'] ?>" title="Edit"><i class="fas fa-edit"></i></a>
+
+                                                <button title="Hapus" class="delete"><i class="fas fa-trash-alt"></i></button>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
                                 </tbody>
+
                             </table>
                         </div>
                     </div>

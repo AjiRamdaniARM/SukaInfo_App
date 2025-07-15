@@ -1,6 +1,6 @@
 :root {
-    --primary-color: #5C6BC0;
-    --secondary-color: #8C9EFF;
+    --primary-color: #000000;
+    --secondary-color: #000000;
     --text-dark: #333;
     --text-light: #f4f4f4;
     --bg-light: #ffffff;
@@ -206,7 +206,7 @@ main.container {
 }
 
 .hero {
-    background: linear-gradient(135deg, var(--primary-color), #3949AB);
+    background: linear-gradient(135deg, #000000);
     color: var(--text-light);
     padding: 10px 20px 20px;
     text-align: center;

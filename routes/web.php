@@ -3,47 +3,96 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
 require_once __DIR__ . '/../controllers/ArtikelController.php';
+require_once __DIR__ . '/../controllers/DashboardController.php';
+require_once __DIR__ . '/../controllers/PenggunaController.php';
+require_once __DIR__ . '/../controllers/HomeController.php';
 require_once __DIR__ . '/../config/config.php';
 
 $artikelController = new ArtikelController($conn);
+$DashboardController = new DashboardController($conn);
+$HomeController = new HomeController($conn);
+$PenggunaController = new PenggunaController($conn);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_SERVER['REQUEST_URI'] === '/SukaInfo_app/artikel/store') {
     $artikelController->store();
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+    if ($path === '/SukaInfo_app/artikel/update') {
+        $artikelController->update(); // ✅ Memanggil method update(), bukan edit()
+    }
+}
+
+
+
 
 
 // Routing GET (menampilkan halaman)
 if ($method === 'GET') {
-    if ($uri === '/SukaInfo_app/deleteArtikel') {
-        $artikelController->delete();
-    }
-    if ($uri === '/SukaInfo_app/editArtikel') {
-        require_once __DIR__ . '/../controllers/ArtikelController.php';
-        $controller = new ArtikelController($conn);
-        $controller->edit();
-        return;
-    }
-    $routes = [
-        '/SukaInfo_app/' => 'views/home/index.php',
-        '/SukaInfo_app/login' => 'views/auth/login.php',
-        '/SukaInfo_app/forgot-password' => 'views/auth/forgoPassword.php',
-        // === route admin === //
-        '/SukaInfo_app/dashboard' => 'views/admin/index.php',
-        // === route artikel === //
-        '/SukaInfo_app/createArtikel' => 'views/admin/pages/artikel/create.php',
-        // === route event === //
-        '/SukaInfo_app/createEvent' => 'views/admin/pages/artikel/create.php',
 
-    ];
+    switch ($uri) {
+        // === Home ===
+        case '/SukaInfo_app/':
+            $controller = new HomeController($conn);
+            $controller->index();
+            break;
 
-    if (array_key_exists($uri, $routes)) {
-        require $routes[$uri];
-    } else {
-        http_response_code(404);
-        echo "404 - Halaman tidak ditemukan";
+        // === Artikel ===
+        case '/SukaInfo_app/createArtikel':
+            require_once __DIR__ . '/../views/admin/pages/artikel/create.php';
+            break;
+
+        case '/SukaInfo_app/editArtikel':
+            $controller = new ArtikelController($conn);
+            $controller->edit();
+            break;
+
+        case '/SukaInfo_app/deleteArtikel':
+            $controller = new ArtikelController($conn);
+            $controller->delete();
+            break;
+
+        case '/SukaInfo_app/detailArtikel':
+            $controller = new ArtikelController($conn);
+            $controller->detail();
+            break;
+
+        // === Event ===
+        case '/SukaInfo_app/createEvent':
+            require_once __DIR__ . '/../views/admin/pages/event/create.php'; // <-- perbaiki path
+            break;
+
+        // === Dashboard ===
+        case '/SukaInfo_app/dashboard':
+            $controller = new DashboardController($conn);
+            $controller->index();
+            break;
+
+        // === Pengguna ===
+        case '/SukaInfo_app/pengguna':
+            $controller = new PenggunaController($conn);
+            $controller->edit(); // atau bisa dibuat method index() jika ingin tampilkan daftar pengguna
+            break;
+
+        // === Auth ===
+        case '/SukaInfo_app/login':
+            require_once __DIR__ . '/../views/auth/login.php';
+            break;
+
+        case '/SukaInfo_app/forgot-password':
+            require_once __DIR__ . '/../views/auth/forgoPassword.php';
+            break;
+
+        // === Default ===
+        default:
+            http_response_code(404);
+            echo "404 - Halaman tidak ditemukan";
+            break;
     }
 }
+
 
 
 // Routing POST (menangani login AJAX)
@@ -89,13 +138,8 @@ if ($uri === '/SukaInfo_app/login' && $method === 'POST') {
             'message' => 'Terjadi kesalahan sistem.'
         ]);
     }
-
     exit;
 }
-
-
-
-
 
 // Routing Logout
 elseif ($uri === '/SukaInfo_app/logout') {
