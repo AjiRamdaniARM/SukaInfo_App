@@ -9,6 +9,7 @@
                 <li><a href="#" class="nav-link" data-page="articles"><i class="fas fa-newspaper"></i> Artikel</a></li>
                 <li><a href="#" class="nav-link" data-page="events"><i class="fas fa-calendar-alt"></i> Event</a></li>
                 <li><a href="#" class="nav-link" data-page="jobs"><i class="fas fa-briefcase"></i> Lowongan Kerja</a></li>
+                <li><a href="#" class="nav-link" data-page="rekomendasi"><i class="fas fa-briefcase"></i> Rekomendasi</a></li>
                 <li><a href="#" class="nav-link" data-page="users"><i class="fas fa-users"></i> Pengguna</a></li>
                 <li><a href="/SukaInfo_app/logout" class="nk logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </nav>

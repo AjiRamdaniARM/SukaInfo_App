@@ -40,11 +40,12 @@
                 <input type="hidden" name="id">
 
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="container">
                         <!-- Username -->
                         <div class="mb-3">
                             <label for="username" class="form-label">Username *</label>
                             <input type="text" name="username" id="username" class="form-control" value="<?= htmlspecialchars($pengguna['username']) ?>" required>
+                            <input type="text" hidden name="id" id="id" class="form-control" value="<?= htmlspecialchars($pengguna['id']) ?>" required>
                         </div>
 
                         <!-- Email -->

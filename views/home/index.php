@@ -55,25 +55,19 @@ $title = "Sukabumi Muda"
         <section id="info-loker">
             <h2>Info Loker</h2>
             <div class="section-grid loker-acara-grid">
-                <a href="detail-loker-1.html" class="card">
-                    <div class="card-img-container">
-                        <img src="asset/info loker 1.png" alt="Lowongan Kerja Admin">
-                    </div>
-                    <div class="card-content">
-                        <h3>INFOSMI Buka Kesempatan Magang Batch 14!</h3>
-                        <p>Bagi kamu yang ingin mendapatkan pengalaman di dunia kerja, segera cek info lengkapnya di Instagram @infosmigroup! Ini adalah kesempatan emas untuk belajar dan berkembang bersama INFOSMI.</p>
-                    </div>
-                </a>
-                <a href="detail-loker-2.html" class="card">
-                    <div class="card-img-container">
-                        <img src="asset/info loker 2.png" alt="Lowongan Kerja Desainer Grafis">
-                    </div>
-                    <div class="card-content">
-                        <h3>Like Earth Coffee Cari Waiter Secepatnya!</h3>
-                        <p>Like Earth Coffee buka lowongan Waiter di Sukabumi. Minimal SMK/D3, pria/wanita, rapi & bertanggung jawab. Kirim lamaranmu langsung ke alamat dan whatsapp tertera.</p>
-                    </div>
-                </a>
+                <?php foreach ($lowongans as $job): ?>
+                    <a href="/SukaInfo_app/lowongan/detail?id=<?= $job['id'] ?>" class="card">
+                        <div class="card-img-container">
+                            <img src="/SukaInfo_app/<?= htmlspecialchars($job['poster']) ?: 'assets/img/default-job.png' ?>" alt="<?= htmlspecialchars($job['judul']) ?>">
+                        </div>
+                        <div class="card-content">
+                            <h3><?= htmlspecialchars($job['judul']) ?></h3>
+                            <p><?= substr(strip_tags($job['deskripsi']), 0, 150) ?>...</p>
+                        </div>
+                    </a>
+                <?php endforeach; ?>
             </div>
+
             <div class="more-button-container">
                 <a href="info-loker-full.html" class="more-button">Tampilkan Lebih Banyak Loker</a>
             </div>
@@ -82,25 +76,19 @@ $title = "Sukabumi Muda"
         <section id="acara">
             <h2>Acara di Sukabumi</h2>
             <div class="section-grid loker-acara-grid">
-                <a href="detail-acara-1.html" class="card">
-                    <div class="card-img-container">
-                        <img src="asset/acara 1.png" alt="Konser Musik Sukabumi">
-                    </div>
-                    <div class="card-content">
-                        <h3>Sukabumi Nyerenteng #Vol1: Ajang Pertarungan Sengit di Gor Merdeka Sukabumi!</h3>
-                        <p>Sukabumi Nyerenteng #Vol1 hadir 11-12 Juli 2025 di Gor Merdeka! Siap-siap untuk MMA Striking, Three on Three, Digulung, & Freestyle Boxing. Daftar Rp250 ribu ke Admin.</p>
-                    </div>
-                </a>
-                <a href="detail-acara-2.html" class="card">
-                    <div class="card-img-container">
-                        <img src="asset/acara 2.png" alt="Workshop Kreatif Sukabumi">
-                    </div>
-                    <div class="card-content">
-                        <h3>INFOSMI LIVE Hadirkan "Bake Me Happiness Layer 3" Besok!</h3>
-                        <p>INFOSMI LIVE gelar "Bake Me Happiness Layer 3" besok, 22 Juni 2025, di Secret Garden Sukabumi. Ikuti kelas baking kue seharga 120K, dapatkan kit lengkap, sertifikat, & doorprize.</p>
-                    </div>
-                </a>
+                <?php foreach ($events as $event): ?>
+                    <a href="/SukaInfo_app/event/detail?id=<?= $event['id'] ?>" class="card">
+                        <div class="card-img-container">
+                            <img src="/SukaInfo_app/<?= htmlspecialchars($event['poster']) ?: 'assets/img/default-event.png' ?>" alt="<?= htmlspecialchars($event['judul']) ?>">
+                        </div>
+                        <div class="card-content">
+                            <h3><?= htmlspecialchars($event['judul']) ?></h3>
+                            <p><?= substr(strip_tags($event['deskripsi']), 0, 150) ?>...</p>
+                        </div>
+                    </a>
+                <?php endforeach; ?>
             </div>
+
             <div class="more-button-container">
                 <a href="acara-full.html" class="more-button">Tampilkan Lebih Banyak Acara</a>
             </div>

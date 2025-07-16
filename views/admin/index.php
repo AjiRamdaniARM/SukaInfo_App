@@ -43,18 +43,24 @@
                         </div>
                         <div class="stat-card">
                             <div class="icon"><i class="fas fa-calendar-alt"></i></div>
-                            <div class="number">18</div>
+                            <div class="number"><?= $totalEvents ?></div>
                             <div class="label">Event Mendatang</div>
                         </div>
+                        <?php
+                        // Hitung lowongan yang masih aktif
+                        $lowonganAktif = array_filter($lowongans, function ($job) {
+                            return strtotime($job['tanggal_berakhir']) >= time();
+                        });
+                        ?>
                         <div class="stat-card">
                             <div class="icon"><i class="fas fa-briefcase"></i></div>
-                            <div class="number">32</div>
+                            <div class="number"><?= count($lowonganAktif) ?></div>
                             <div class="label">Lowongan Aktif</div>
                         </div>
                         <div class="stat-card">
                             <div class="icon"><i class="fas fa-users"></i></div>
-                            <div class="number">850</div>
-                            <div class="label">Total Pengunjung Bulan Ini</div>
+                            <div class="number"><?= $totalPengguna ?></div>
+                            <div class="label">Total Data Pengguna</div>
                         </div>
                     </div>
 
@@ -156,16 +162,83 @@
                     </div>
                 </div>
 
+                <div id="rekomendasiPage" class="admin-sub-page">
+                    <h2 class="page-section-title">Manajemen Rekomendasi Tempat</h2>
+
+                    <div class="info-card">
+                        <p>Di sini Anda bisa mengelola semua tempat wisata, kuliner, atau lokasi menarik di Sukabumi.</p>
+
+                        <div class="form-group text-end">
+                            <button onclick="window.location.href='/SukaInfo_app/rekomendasi/create'" class="submit-button" style="width: auto;">
+                                <i class="fas fa-plus"></i> Tambah Rekomendasi Baru
+                            </button>
+                        </div>
+
+                        <div class="table-responsive-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Nama Tempat</th>
+                                        <th>Kategori</th>
+                                        <th>Lokasi</th>
+                                        <th>Tanggal Ditambahkan</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php if (!empty($rekomendasis)): ?>
+                                        <?php $no = 1;
+                                        foreach ($rekomendasis as $row): ?>
+                                            <tr>
+                                                <td><?= $no++ ?></td>
+                                                <td><?= htmlspecialchars($row['nama_tempat']) ?></td>
+                                                <td><?= htmlspecialchars($row['kategori'] ?? '-') ?></td>
+                                                <td><?= htmlspecialchars($row['lokasi']) ?></td>
+                                                <td>
+                                                    <?php
+                                                    $tanggal = $row['tanggal'] ?? null;
+                                                    echo $tanggal ? \Carbon\Carbon::parse($tanggal)->translatedFormat('d F Y') : '-';
+                                                    ?>
+                                                </td>
+                                                <td>
+                                                    <?php
+                                                    $status = strtolower($row['status']);
+                                                    $warna = $status === 'draft' ? 'orange' : 'green';
+                                                    echo "<span style='color: {$warna}; font-weight: 500;'>" . ucfirst($status) . "</span>";
+                                                    ?>
+                                                </td>
+                                                <td class="action-buttons">
+                                                    <a href="/SukaInfo_app/detailRekomendasi?id=<?= $row['id'] ?>" title="Lihat"><i class="fas fa-eye"></i></a>
+                                                    <a href="/SukaInfo_app/rekomendasi/edit?id=<?= $row['id'] ?>" title="Edit"><i class="fas fa-edit"></i></a>
+                                                    <a href="/SukaInfo_app/rekomendasi/delete?id=<?= $row['id'] ?>" title="Hapus" class="delete" onclick="return confirm('Yakin ingin menghapus tempat ini?')"><i class="fas fa-trash-alt"></i></a>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <tr>
+                                            <td colspan="7" class="text-center">Belum ada data tempat yang direkomendasikan.</td>
+                                        </tr>
+                                    <?php endif; ?>
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
 
                 <div id="eventsPage" class="admin-sub-page">
                     <h2 class="page-section-title">Manajemen Event</h2>
                     <div class="info-card">
                         <p>Atur dan publikasikan event yang diselenggarakan oleh Sukabumi Muda atau mitra.</p>
                         <div class="form-group" style="text-align: right;">
-                            <button class="submit-button" style="width: auto;"><i class="fas fa-plus"></i> Tambah Event Baru</button>
+                            <button onclick="window.location.href='/SukaInfo_app/createEvent'" class="submit-button" style="width: auto;"><i class="fas fa-plus"></i> Tambah Event Baru</button>
                         </div>
                         <div class="table-responsive-wrapper">
-                            <table class="data-table">
+                            <table class="data-table table table-bordered table-striped">
                                 <thead>
                                     <tr>
                                         <th>#</th>
@@ -177,39 +250,37 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>Seminar Kewirausahaan Muda</td>
-                                        <td>2025-07-20</td>
-                                        <td>Gedung Pemuda</td>
-                                        <td><span style="color: blue; font-weight: 500;">Mendatang</span></td>
-                                        <td class="action-buttons">
-                                            <button title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button title="Hapus" class="delete"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>Workshop Desain Grafis</td>
-                                        <td>2025-08-05</td>
-                                        <td>Pusat Komunitas</td>
-                                        <td><span style="color: blue; font-weight: 500;">Mendatang</span></td>
-                                        <td class="action-buttons">
-                                            <button title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button title="Hapus" class="delete"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>Bakti Sosial Lingkungan</td>
-                                        <td>2025-06-25</td>
-                                        <td>Pantai Pelabuhan Ratu</td>
-                                        <td><span style="color: green; font-weight: 500;">Selesai</span></td>
-                                        <td class="action-buttons">
-                                            <button title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button title="Hapus" class="delete"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
+                                    <?php foreach ($events as $index => $event): ?>
+                                        <?php
+                                        $tanggalEvent = strtotime($event['tanggal']);
+                                        $status = $tanggalEvent >= time() ? 'Mendatang' : 'Selesai';
+                                        $warnaStatus = $status === 'Mendatang' ? 'blue' : 'green';
+                                        ?>
+                                        <tr>
+                                            <td><?= $index + 1 ?></td>
+                                            <td><?= htmlspecialchars($event['judul']) ?></td>
+                                            <td><?= htmlspecialchars($event['tanggal']) ?></td>
+                                            <td><?= htmlspecialchars($event['lokasi']) ?></td>
+                                            <td><span style="color: <?= $warnaStatus ?>; font-weight: 500;"><?= $status ?></span></td>
+                                            <td class="action-buttons">
+                                                <!-- Tombol Detail -->
+                                                <a href="/SukaInfo_app/event/detail?id=<?= $event['id'] ?>" title="Lihat Detail">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+
+                                                <!-- Tombol Edit -->
+                                                <a href="/SukaInfo_app/event/edit?id=<?= $event['id'] ?>" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+
+                                                <!-- Tombol Hapus -->
+                                                <a href="/SukaInfo_app/event/delete?id=<?= $event['id'] ?>" title="Hapus" class="delete" onclick="return confirm('Yakin ingin menghapus event ini?')">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </a>
+                                            </td>
+
+                                        </tr>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
@@ -221,7 +292,7 @@
                     <div class="info-card">
                         <p>Kelola daftar lowongan kerja yang tersedia untuk pemuda Sukabumi.</p>
                         <div class="form-group" style="text-align: right;">
-                            <button class="submit-button" style="width: auto;"><i class="fas fa-plus"></i> Tambah Lowongan Baru</button>
+                            <button onclick="window.location.href='/SukaInfo_app/createJobs'" class="submit-button" style="width: auto;"><i class="fas fa-plus"></i> Tambah Lowongan Baru</button>
                         </div>
                         <div class="table-responsive-wrapper">
                             <table class="data-table">
@@ -236,40 +307,29 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>Web Developer Junior</td>
-                                        <td>PT Maju Digital</td>
-                                        <td>2025-07-31</td>
-                                        <td><span style="color: green; font-weight: 500;">Aktif</span></td>
-                                        <td class="action-buttons">
-                                            <button title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button title="Hapus" class="delete"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>Social Media Specialist</td>
-                                        <td>Sukabumi Kreatif</td>
-                                        <td>2025-07-15</td>
-                                        <td><span style="color: green; font-weight: 500;">Aktif</span></td>
-                                        <td class="action-buttons">
-                                            <button title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button title="Hapus" class="delete"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>Marketing Staff</td>
-                                        <td>CV Harapan Baru</td>
-                                        <td>2025-06-30</td>
-                                        <td><span style="color: orange; font-weight: 500;">Ditutup</span></td>
-                                        <td class="action-buttons">
-                                            <button title="Edit"><i class="fas fa-edit"></i></button>
-                                            <button title="Hapus" class="delete"><i class="fas fa-trash-alt"></i></button>
-                                        </td>
-                                    </tr>
+                                    <?php foreach ($lowongans as $index => $job): ?>
+                                        <tr>
+                                            <td><?= $index + 1 ?></td>
+                                            <td><?= htmlspecialchars($job['judul']) ?></td>
+                                            <td><?= htmlspecialchars($job['perusahaan']) ?></td>
+                                            <td><?= htmlspecialchars($job['tanggal_berakhir']) ?></td>
+                                            <td>
+                                                <?php
+                                                $status = strtotime($job['tanggal_berakhir']) >= time() ? 'Aktif' : 'Ditutup';
+                                                $warna = $status === 'Aktif' ? 'green' : 'orange';
+                                                ?>
+                                                <span style="color: <?= $warna ?>; font-weight: 500;"><?= $status ?></span>
+                                            </td>
+                                            <td class="action-buttons">
+                                                <a href="/SukaInfo_app/jobs/detail?id=<?= $job['id'] ?>" title="Lihat Detail"><i class="fas fa-eye"></i></a>
+                                                <a href="/SukaInfo_app/lowongan/edit?id=<?= $job['id'] ?>" title="Edit"><i class="fas fa-edit"></i></a>
+                                                <a href="/SukaInfo_app/jobs/delete?id=<?= $job['id'] ?>" title="Hapus" class="delete" onclick="return confirm('Yakin ingin hapus?')"><i class="fas fa-trash-alt"></i></a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
                                 </tbody>
+
+
                             </table>
                         </div>
                     </div>
@@ -280,7 +340,7 @@
                     <div class="info-card">
                         <p>Lihat dan kelola akun pengguna yang terdaftar di platform Sukabumi Muda.</p>
                         <div class="form-group" style="text-align: right;">
-                            <button class="submit-button" style="width: auto;"><i class="fas fa-user-plus"></i> Tambah Pengguna Baru</button>
+                            <button class="submit-button" onclick="window.location.href='/SukaInfo_app/pengguna/create'" style="width: auto;"><i class="fas fa-user-plus"></i> Tambah Pengguna Baru</button>
                         </div>
                         <div class="table-responsive-wrapper">
                             <table class="data-table">
@@ -289,8 +349,6 @@
                                         <th>#</th>
                                         <th>Nama Pengguna</th>
                                         <th>Email</th>
-
-
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -302,8 +360,7 @@
                                             <td><?= htmlspecialchars($user['email']) ?></td>
                                             <td class="action-buttons">
                                                 <a href="/SukaInfo_app/pengguna?id=<?= $user['id'] ?>" title="Edit"><i class="fas fa-edit"></i></a>
-
-                                                <button title="Hapus" class="delete"><i class="fas fa-trash-alt"></i></button>
+                                                <a href="/SukaInfo_app/deletePengguna?id=<?= $user['id'] ?>" title="Hapus" class="delete" onclick="return confirm('Yakin ingin hapus?')"><i class="fas fa-trash-alt"></i></a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
