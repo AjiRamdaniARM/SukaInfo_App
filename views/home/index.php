@@ -97,33 +97,17 @@ $title = "Sukabumi Muda"
         <section id="rekomendasi">
             <h2>Rekomendasi Tempat di Sukabumi</h2>
             <div class="section-grid rekomendasi-grid">
-                <a href="detail-tempat-1.html" class="card">
-                    <div class="card-img-container">
-                        <img src="asset/rekomendasi 1.png" alt="Cafe Hits Sukabumi">
-                    </div>
-                    <div class="card-content">
-                        <h3>Motion Social Bar</h3>
-                        <p>Tempat hangout kekinian di Sukabumi dengan suasana nyaman, cocok untuk nongkrong, ngopi, atau bersantai sambil menikmati live music. Pilihan menu makan dan minum beragam.</p>
-                    </div>
-                </a>
-                <a href="detail-tempat-2.html" class="card">
-                    <div class="card-img-container">
-                        <img src="asset/rekomendasi 2.png" alt="Taman Kota Sukabumi">
-                    </div>
-                    <div class="card-content">
-                        <h3>Waroeng Restoe Iboe</h3>
-                        <p>Restoran keluarga dengan suasana tradisional dan menu masakan Indonesia rumahan yang autentik. Cocok untuk makan siang atau malam bersama keluarga.</p>
-                    </div>
-                </a>
-                <a href="detail-tempat-3.html" class="card">
-                    <div class="card-img-container">
-                        <img src="asset/rekomendasi 3.png" alt="Wisata Alam Sukabumi">
-                    </div>
-                    <div class="card-content">
-                        <h3>Mensa Coffee Sukabumi</h3>
-                        <p>Kafe modern dengan desain minimalis, pilihan kopi spesial, dan makanan ringan yang cocok untuk bekerja, belajar, atau sekadar ngopi santai.</p>
-                    </div>
-                </a>
+                <?php foreach ($rekomendasi as $rkm): ?>
+                    <a href="detail-tempat-1.html" class="card">
+                        <div class="card-img-container">
+                            <img src="/SukaInfo_app/<?= htmlspecialchars($rkm['poster']) ?: 'assets/img/default-event.png' ?>" alt="<?= $rkm['nama_tempat'] ?>">
+                        </div>
+                        <div class="card-content">
+                            <h3><?= htmlspecialchars($rkm['nama_tempat']) ?></h3>
+                            <p><?= substr(strip_tags($rkm['deskripsi']), 0, 150) ?>...</p>
+                        </div>
+                    </a>
+                <?php endforeach; ?>
             </div>
             <div class="more-button-container">
                 <a href="rekomendasi-full.html" class="more-button">Tampilkan Lebih Banyak Rekomendasi</a>

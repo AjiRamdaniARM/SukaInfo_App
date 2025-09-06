@@ -39,6 +39,14 @@ class HomeController
             }
         }
 
+        $resultRekomendasi = $this->conn->query("SELECT * FROM tempats ORDER BY tanggal DESC LIMIT 4");
+        $rekomendasi = [];
+        if ($resultRekomendasi) {
+            while ($row = $resultRekomendasi->fetch_assoc()) {
+                $rekomendasi[] = $row;
+            }
+        }
+
         $resultEvents = $this->conn->query("SELECT * FROM events ORDER BY tanggal DESC LIMIT 4");
         $events = [];
         if ($resultEvents) {
