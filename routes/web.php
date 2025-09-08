@@ -138,6 +138,10 @@ if ($method === 'GET') {
             $controller = new RekomendasiController($conn);
             $controller->delete(); // atau bisa dibuat method index() jika ingin tampilkan daftar pengguna
             break;
+        case '/SukaInfo_app/rekomendasi/detail':
+            $controller = new RekomendasiController($conn);
+            $controller->detail();
+            break;
 
         // === Pengguna === 
         case '/SukaInfo_app/pengguna':

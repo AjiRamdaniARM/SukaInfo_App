@@ -98,7 +98,7 @@ $title = "Sukabumi Muda"
             <h2>Rekomendasi Tempat di Sukabumi</h2>
             <div class="section-grid rekomendasi-grid">
                 <?php foreach ($rekomendasi as $rkm): ?>
-                    <a href="detail-tempat-1.html" class="card">
+                    <a href="/SukaInfo_app/rekomendasi/detail?id=<?= $rkm['id'] ?>" class="card">
                         <div class="card-img-container">
                             <img src="/SukaInfo_app/<?= htmlspecialchars($rkm['poster']) ?: 'assets/img/default-event.png' ?>" alt="<?= $rkm['nama_tempat'] ?>">
                         </div>

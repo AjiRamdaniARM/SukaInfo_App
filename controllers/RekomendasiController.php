@@ -41,7 +41,7 @@ class RekomendasiController
         // Handle upload gambar (jika ada)
         $posterPath = null;
         if (isset($_FILES['poster']) && $_FILES['poster']['error'] === UPLOAD_ERR_OK) {
-            $uploadDir = 'uploads/rekomendasi/';
+            $uploadDir = 'assets/upload/rekomendasi/';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
@@ -212,5 +212,29 @@ class RekomendasiController
 
         header("Location: /SukaInfo_app/dashboard");
         exit;
+    }
+    public function detail()
+    {
+        $id = $_GET['id'] ?? null;
+
+        if (!$id || !is_numeric($id)) {
+            $_SESSION['flash_error'] = "ID rekomendasi tidak valid.";
+            header("Location: /SukaInfo_app/dashboard");
+            exit;
+        }
+
+        $stmt = $this->conn->prepare("SELECT * FROM tempats WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $rekomendasi = $result->fetch_assoc();
+
+        if (!$rekomendasi) {
+            $_SESSION['flash_error'] = "Artikel tidak ditemukan.";
+            header("Location: /SukaInfo_app/dashboard");
+            exit;
+        }
+        // Kirim ke view
+        require __DIR__ . '/../views/admin/pages/rekomendasi/detail.php';
     }
 }
